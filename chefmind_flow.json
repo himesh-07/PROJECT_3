@@ -1,0 +1,119 @@
+{
+  "id": "chefmind-rag-flow-v1",
+  "name": "ChefMind AI — watsonx RAG Flow",
+  "description": "Culinary RAG agent powered by IBM watsonx. Retrieves recipe context from ChromaDB, adapts recipes using IBM Granite, and returns structured cooking instructions.",
+  "version": "1.0.0",
+  "data": {
+    "nodes": [
+      {
+        "id": "node-input-question",
+        "type": "TextInputComponent",
+        "position": { "x": 80, "y": 200 },
+        "data": {
+          "display_name": "Cooking Goal",
+          "description": "What the user wants to cook or adapt.",
+          "input_value": "Make the chocolate chip cookies keto and sugar-free"
+        }
+      },
+      {
+        "id": "node-input-ingredients",
+        "type": "TextInputComponent",
+        "position": { "x": 80, "y": 380 },
+        "data": {
+          "display_name": "Available Ingredients",
+          "description": "Comma-separated pantry items the user has.",
+          "input_value": "almond flour, eggs, butter, erythritol, dark chocolate 85%, vanilla"
+        }
+      },
+      {
+        "id": "node-input-restrictions",
+        "type": "TextInputComponent",
+        "position": { "x": 80, "y": 560 },
+        "data": {
+          "display_name": "Dietary Restrictions",
+          "description": "Allergens or diet flags.",
+          "input_value": "keto, sugar-free, gluten-free"
+        }
+      },
+      {
+        "id": "node-input-constraints",
+        "type": "TextInputComponent",
+        "position": { "x": 80, "y": 740 },
+        "data": {
+          "display_name": "Time & Equipment Constraints",
+          "description": "Time, equipment or skill-level limits.",
+          "input_value": "45 minutes, standard oven"
+        }
+      },
+      {
+        "id": "node-chefmind-rag",
+        "type": "ChefMindRAGComponent",
+        "position": { "x": 480, "y": 440 },
+        "data": {
+          "display_name": "ChefMind AI (watsonx RAG)",
+          "description": "Runs the full RAG pipeline: ChromaDB retrieval → IBM Granite generation.",
+          "component_file": "langflow_component.py",
+          "inputs": {
+            "question": { "connected_to": "node-input-question" },
+            "available_ingredients": { "connected_to": "node-input-ingredients" },
+            "dietary_restrictions": { "connected_to": "node-input-restrictions" },
+            "constraints": { "connected_to": "node-input-constraints" }
+          },
+          "tech_stack": {
+            "vector_store": "ChromaDB (local persistent)",
+            "embedding_model": "ibm/slate-125m-english-rtrvr",
+            "generation_model": "ibm/granite-13b-chat-v2",
+            "orchestration": "IBM Langflow + langchain-ibm",
+            "rag_framework": "LangChain RAG"
+          }
+        }
+      },
+      {
+        "id": "node-output",
+        "type": "ChatOutputComponent",
+        "position": { "x": 880, "y": 440 },
+        "data": {
+          "display_name": "Recipe Adaptation Output",
+          "description": "Displays the adapted recipe with ingredients table, instructions, nutrition, and shopping list."
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge-question",
+        "source": "node-input-question",
+        "target": "node-chefmind-rag",
+        "sourceHandle": "output",
+        "targetHandle": "question"
+      },
+      {
+        "id": "edge-ingredients",
+        "source": "node-input-ingredients",
+        "target": "node-chefmind-rag",
+        "sourceHandle": "output",
+        "targetHandle": "available_ingredients"
+      },
+      {
+        "id": "edge-restrictions",
+        "source": "node-input-restrictions",
+        "target": "node-chefmind-rag",
+        "sourceHandle": "output",
+        "targetHandle": "dietary_restrictions"
+      },
+      {
+        "id": "edge-constraints",
+        "source": "node-input-constraints",
+        "target": "node-chefmind-rag",
+        "sourceHandle": "output",
+        "targetHandle": "constraints"
+      },
+      {
+        "id": "edge-output",
+        "source": "node-chefmind-rag",
+        "target": "node-output",
+        "sourceHandle": "recipe_adaptation",
+        "targetHandle": "input"
+      }
+    ]
+  }
+}
