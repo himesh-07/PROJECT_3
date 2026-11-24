@@ -1,4 +1,4 @@
-0"""
+"""
 retriever.py
 ────────────
 Semantic retrieval layer for ChefMind AI.
@@ -7,7 +7,7 @@ Given a user cooking query, this module:
 1. Opens the persisted Chroma collection (built by ingest.py).
 2. Embeds the query with the same IBM watsonx embedding model.
 3. Returns the top-K most relevant recipe chunks as a single context string.
-"""
+""";
 
 from __future__ import annotations
 
